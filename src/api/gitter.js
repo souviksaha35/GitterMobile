@@ -62,6 +62,10 @@ export function hideRoom(token, roomId, userId) {
     })
 }
 
+export function unreadItems(userId, roomId, token) {
+    return callApi(`user/${userId}/rooms/${roomId}/unreadItems`, token)
+}
+
 export function readMessage(token, userId, roomId) {
     return callApi(`user/${userId}/rooms/${roomId}/unreadItems`, token, {
         method: 'get'
