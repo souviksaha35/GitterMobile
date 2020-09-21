@@ -62,15 +62,91 @@ export function hideRoom(token, roomId, userId) {
     })
 }
 
+// { get the lists of rooms the user is part of}
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} token 
+ */
+
+export function listRoom(userId, token) {
+    return callApi(`user/${userId}/rooms`, token)
+}
+
+// { mark unread chat messages as read}
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} roomId 
+ * @param {*} token 
+ * @param {*} chat 
+ */
+
+export function readMessage(userId, roomId, token, chat) {
+    return callApi(`user/${userId}/rooms/${roomId}/unreadItems`, token, {
+        method: 'POST',
+        body: JSON.stringify({
+             chat
+        })
+    })
+}
+
+// { get list of user's Github organization}
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} token 
+ */
+
+export function githubOrgs(userId, token) {
+    return callApi(`user/${userId}/orgs`, token)
+}
+
+// { get the list of Github repositories nested under the current user }
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} token 
+ */
+
+export function githubRepos(userId, token) {
+    return callApi(`user/${userId}/repos`, token)
+}
+
+// { List of Gitter channels nested under the current user}
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} token 
+ */
+
+export function gitterChannels(userId, token) {
+    return callApi(`user/${userId}/channels`, token)
+}
+
+// { get all unread messages}
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} roomId 
+ * @param {*} token 
+ */
+
 export function unreadItems(userId, roomId, token) {
     return callApi(`user/${userId}/rooms/${roomId}/unreadItems`, token)
 }
 
-export function readMessage(token, userId, roomId) {
-    return callApi(`user/${userId}/rooms/${roomId}/unreadItems`, token, {
-        method: 'get'
-    })
-}
+// export function readMessage(token, userId, roomId) {
+//     return callApi(`user/${userId}/rooms/${roomId}/unreadItems`, token, {
+//         method: 'get'
+//     })
+// }
 
 // {
 //     Rooms resoruces
@@ -85,6 +161,129 @@ export function readMessage(token, userId, roomId) {
 // { List of rooms that current users are logged in }
 export function room(token, id) {
     return callApi('rooms/' + id, token)
+}
+
+// { Remove user from room, also leave a room }
+
+/**
+ * 
+ * @param {*} roomId 
+ * @param {*} userId 
+ * @param {*} token 
+ */
+
+export function leaveRoom(roomId, userId, token) {
+    return callApi(`rooms/${roomId}/users/${userId}`, token, {
+        method: 'DELETE'
+    })
+}
+
+// { join room via the room id = roomId }
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} token 
+ * @param {*} roomId 
+ */
+
+export function joinRoom(userId, token, roomId) {
+    return callApi(`user/${userId}/rooms`, token, {
+        method: 'POST',
+        body: JSON.stringify({
+            id: roomId
+        })
+    })
+}
+
+// { join room via the uri of the room}
+
+/**
+ * 
+ * @param {*} token 
+ * @param {*} username 
+ */
+
+export function joinRoomByUserName(token, username) {
+    return callApi('rooms', token, {
+        method: 'POST',
+        body: JSON.stringify({
+            uri: username
+        })
+    })
+}
+
+// { Delete the via room id}
+
+/**
+ * 
+ * @param {*} token 
+ * @param {*} roomId 
+ */
+
+export function deleteRoom(token, roomId) {
+    return callApi(`rooms/${roomId}`, token, {
+        method: 'DELETE'
+    })
+}
+
+// { Update the room i.e, topic of the room }
+
+/**
+ * 
+ * @param {*} roomId 
+ * @param {*} token 
+ * @param {*} topic 
+ */
+
+export function updateRoom(roomId, token, topic) {
+    return callApi(`rooms/${roomId}`, token, {
+        method: 'PUT',
+        body: JSON.stringify({
+            topic: topic
+        })
+    })
+}
+
+// { Banned the use from the room}
+
+/**
+ * 
+ * @param {*} username 
+ * @param {*} token 
+ * @param {*} roomId 
+ */
+
+export function banUser(username, token, roomId) {
+    return callApi(`rooms/${roomId}/bans`, token, {
+        method: 'POST',
+        body: JSON.stringify({
+            username: username
+        })
+    })
+}
+
+// { get Users of the specified room }
+
+/**
+ * 
+ * @param {*} token 
+ * @param {*} roomId 
+ */
+
+export function getRoomUsers(token, roomId) {
+    return callApi(`rooms/${roomId}/users`, token)
+}
+
+/**
+ * 
+ * @param {*} token 
+ * @param {*} roomId 
+ * @param {*} skip 
+ */
+
+export function getRoomUsersWithSkip(token, roomId, skip) {
+    return callApi(`rooms/${roomId}/users?skip=${skip}`, token)
 }
 
 /**
@@ -174,7 +373,7 @@ export function updateMessage(roomId, token, chatMessageId, text) {
  * @param {*} options 
  */
 
-function callApi(endpoint, token, options) {
+function callApi(endpoint, token, options = {method: 'get'}) {
     const url = `${apiUrl}/${endpoint}`
 
     return fetch(url, {
